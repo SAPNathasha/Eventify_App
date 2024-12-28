@@ -9,21 +9,22 @@ return new class extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
+            $table->id();
             $table->string('username')->unique();
             $table->string('email')->unique();
             $table->string('password');
             $table->string('name');
             $table->string('phone_number')->nullable();
             $table->string('gender')->nullable();
-            $table->enum('role', ['subscriber', 'admin'])->default('subscriber'); 
+            $table->enum('role', ['subscriber', 'admin'])->default('subscriber');
             $table->timestamps();
         });
     }
 
-    
+
     public function down()
     {
         Schema::dropIfExists('users');
     }
-   
+
 };
