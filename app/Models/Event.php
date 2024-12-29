@@ -14,10 +14,10 @@ class Event extends Model
         'description',
         'start_time',
         'end_time',
+        'venue',
         'createdUserId',
     ];
 
-    // Define the relationship with the User model
     public function creator()
     {
         return $this->belongsTo(User::class, 'createdUserId');

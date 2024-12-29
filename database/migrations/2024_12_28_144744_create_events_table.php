@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamp('start_time')->nullable();
             $table->timestamp('end_time')->nullable();
+            $table->text('venue')->nullable();
             $table->unsignedBigInteger('createdUserId');
             $table->foreign('createdUserId')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
