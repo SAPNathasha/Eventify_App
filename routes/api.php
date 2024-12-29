@@ -18,4 +18,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware(['auth:sanctum', RoleMiddleware::class.':admin'])->group(function () {
     Route::delete('/admin/delete-user/{id}', [AdminController::class, 'deleteUser']);
+    Route::post('/admin/add-event', [AdminController::class, 'addEvent']);
 });

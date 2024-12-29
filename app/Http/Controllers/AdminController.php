@@ -36,4 +36,49 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+    public function addEvent(Request $request)
+    {
+        try {
+
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string|max:1000',
+                'startDateTime' => 'required|date|after_or_equal:now',
+                'endDateTime' => 'required|date|after:startDateTime',
+                'venue' => 'required|string|max:255',
+                'userId' => 'required|integer|exists:users,id',
+            ]);
+
+
+
+            $title = $validated['title'];
+            $description = $validated['description']?? null;
+            $startDateTime = $validated['startDateTime'];
+            $endDateTime = $validated['endDateTime'];
+            $venue = $validated['venue'];
+            $userId = $validated['userId'];
+
+
+            Event::create([
+                'title' => $title,
+                'description' => $description,
+                'start_time' => $startDateTime,
+                'end_time' => $endDateTime,
+                'venue' => $venue,
+                'createdUserId' => $userId,
+            ]);
+
+            return response()->json([
+                "status" => 200,
+                "message" => "Event has created susccessfully!"
+            ]);
+        } catch (\Exception $e) {
+            // Handle exceptions
+            return response()->json([
+                'error' => 'Server error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
