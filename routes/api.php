@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EventController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -16,5 +17,5 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware(['auth:sanctum', RoleMiddleware::class.':admin'])->group(function () {
-    Route::delete('/admin/delete-user/{id}', [UserController::class, 'deleteUser']);
+    Route::delete('/admin/delete-user/{id}', [AdminController::class, 'deleteUser']);
 });
