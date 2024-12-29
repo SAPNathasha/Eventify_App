@@ -10,4 +10,5 @@ Route::post('/user/login', [UserController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/event/add', [EventController::class, 'addEvent']);
     Route::put('/event/edit', [EventController::class, 'editEvent']);
+    Route::delete('/event/delete', [EventController::class, 'deleteEvent']);
 });

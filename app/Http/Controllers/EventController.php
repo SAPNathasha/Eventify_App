@@ -29,7 +29,7 @@ class EventController extends Controller
             $venue = $validated['venue'];
 
 
-            $user = Event::create([
+            Event::create([
                 'title' => $title,
                 'description' => $description,
                 'start_time' => $startDateTime,
@@ -106,4 +106,40 @@ class EventController extends Controller
             ], 500);
         }
     }
+
+    public function deleteEvent(Request $request)
+{
+    try {
+
+        $validated = $request->validate([
+            'eventId' => 'required|exists:events,id',
+        ]);
+
+        $userId = auth()->id();
+        $eventId = $validated['eventId'];
+
+        $event = Event::where('id', $eventId)
+            ->where('createdUserId', $userId)
+            ->firstOrFail();
+
+        $event->delete();
+
+        return response()->json([
+            "status" => 200,
+            "message" => "Event has been deleted successfully!",
+        ]);
+
+    } catch (ModelNotFoundException $e) {
+        return response()->json([
+            'status' => 404,
+            'message' => "Event can't be found or you do not have permission to delete it.",
+        ], 404);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Server error',
+            'message' => $e->getMessage(),
+        ], 500);
+    }
+}
 }
