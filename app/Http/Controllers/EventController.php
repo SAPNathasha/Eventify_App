@@ -108,38 +108,56 @@ class EventController extends Controller
     }
 
     public function deleteEvent(Request $request)
-{
-    try {
+    {
+        try {
 
-        $validated = $request->validate([
-            'eventId' => 'required|exists:events,id',
-        ]);
+            $validated = $request->validate([
+                'eventId' => 'required|exists:events,id',
+            ]);
 
-        $userId = auth()->id();
-        $eventId = $validated['eventId'];
+            $userId = auth()->id();
+            $eventId = $validated['eventId'];
 
-        $event = Event::where('id', $eventId)
-            ->where('createdUserId', $userId)
-            ->firstOrFail();
+            $event = Event::where('id', $eventId)
+                ->where('createdUserId', $userId)
+                ->firstOrFail();
 
-        $event->delete();
+            $event->delete();
 
-        return response()->json([
-            "status" => 200,
-            "message" => "Event has been deleted successfully!",
-        ]);
+            return response()->json([
+                "status" => 200,
+                "message" => "Event has been deleted successfully!",
+            ]);
 
-    } catch (ModelNotFoundException $e) {
-        return response()->json([
-            'status' => 404,
-            'message' => "Event can't be found or you do not have permission to delete it.",
-        ], 404);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'status' => 404,
+                'message' => "Event can't be found or you do not have permission to delete it.",
+            ], 404);
 
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'Server error',
-            'message' => $e->getMessage(),
-        ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Server error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
-}
+
+    public function getAllEvents()
+    {
+        try {
+        $events = Event::with('creator:id,name')->get();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $events,
+        ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Server error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

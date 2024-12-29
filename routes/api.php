@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 
 Route::post('/user/register', [UserController::class, 'register']);
 Route::post('/user/login', [UserController::class, 'login']);
+Route::get('/event/get-all', [EventController::class, 'getAllEvents']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/event/add', [EventController::class, 'addEvent']);
