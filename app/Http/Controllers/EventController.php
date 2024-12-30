@@ -7,11 +7,12 @@ use App\Models\Event;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class EventController extends Controller
-{
+{    
+    // Add new event 
     public function addEvent(Request $request)
     {
         try {
-
+            // validate requested data
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string|max:1000',
@@ -21,14 +22,14 @@ class EventController extends Controller
             ]);
 
 
-
+            // assign validated data
             $title = $validated['title'];
             $description = $validated['description']?? null;
             $startDateTime = $validated['startDateTime'];
             $endDateTime = $validated['endDateTime'];
             $venue = $validated['venue'];
 
-
+            // create a new event
             Event::create([
                 'title' => $title,
                 'description' => $description,
@@ -38,12 +39,13 @@ class EventController extends Controller
                 'createdUserId' => auth()->user()->id,
             ]);
 
+            // return success
             return response()->json([
                 "status" => 200,
                 "message" => "Event has created susccessfully!"
             ]);
         } catch (\Exception $e) {
-            // Handle exceptions
+            // return errors
             return response()->json([
                 'error' => 'Server error',
                 'message' => $e->getMessage(),
@@ -51,10 +53,11 @@ class EventController extends Controller
         }
     }
 
+    // edit an event
     public function editEvent(Request $request)
     {
         try {
-
+            // validate requested data
             $validated = $request->validate([
                 'eventId' => 'required|exists:events,id',
                 'title' => 'nullable|string|max:255',
