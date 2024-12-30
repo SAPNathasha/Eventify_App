@@ -18,7 +18,6 @@ class UserController extends Controller
                 'password' => 'required|string|min:8',             // Required, min 8 chars, confirmation required
                 'name' => 'required|string|max:255',                         // Required, max 255 chars
                 'phone_number' => 'nullable|string|regex:/^[0-9+\-\(\)\s]*$/|max:15', // Optional, valid phone number, max 15 chars
-                'gender' => 'nullable|string|in:male,female,other',          // Optional, must be one of: male, female, other
                 'role' => 'nullable|string|in:subscriber,admin',             // Optional, must be subscriber or admin
             ]);
 
@@ -29,8 +28,6 @@ class UserController extends Controller
             $name = $validated['name'];
             $email = $validated['email'];
             $phone_number = $validated['phone_number'] ?? null;
-            $gender = $validated['gender'] ?? null;
-            $role = $validated['role'] ?? 'subscriber';
 
             // Create a new user in database
             $user = User::create([
@@ -39,8 +36,7 @@ class UserController extends Controller
                 'name' => $name,
                 'email' => $email,
                 'phone_number' => $phone_number,
-                'gender' => $gender,
-                'role' => $role
+                'role' => "subscriber"
             ]);
             
             // Return a success response
@@ -81,7 +77,7 @@ class UserController extends Controller
                 return response()->json([
                     "status" => 401,
                     "message" => "Invalid username or password"
-                ]);
+                ],401);
             }
             // generate authentication tokan to user
             $token = $user->createToken('auth_token')->plainTextToken;
@@ -91,7 +87,7 @@ class UserController extends Controller
                 "message" => "Login Successfull!",
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-            ]);
+            ],401);
             
         } catch (\Exception $e) {
             // return errors
