@@ -7,8 +7,8 @@ use App\Models\Event;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class EventController extends Controller
-{    
-    // Add new event 
+{
+    // Add new event
     public function addEvent(Request $request)
     {
         try {
@@ -125,7 +125,7 @@ class EventController extends Controller
             $userId = auth()->id();
             $eventId = $validated['eventId'];
 
-            // fetch the event 
+            // fetch the event
             $event = Event::where('id', $eventId)
                 ->where('createdUserId', $userId)
                 ->firstOrFail();
@@ -163,6 +163,27 @@ class EventController extends Controller
             'status' => 200,
             'data' => $events,
         ]);
+        // return errors
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Server error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getEventsByUser()
+    {
+        try {
+            $userId = auth()->id();
+
+            $events = Event::where('createdUserId', $userId)
+            ->select('id','title')->get();
+            return response()->json([
+                'status' => 200,
+                'data' => $events,
+            ]);
+
         // return errors
         } catch (\Exception $e) {
             return response()->json([
