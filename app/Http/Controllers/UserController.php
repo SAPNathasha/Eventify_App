@@ -6,11 +6,12 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use \Illuminate\Support\Facades\Hash;
 class UserController extends Controller
-{
+    
+{   //Register a new user
     public function register(Request $request)
     {
         try {
-
+            // Validate data
             $validated = $request->validate([
                 'username' => 'required|string|max:255|unique:users,username', // Required, unique, max 255 chars
                 'email' => 'required|email|max:255|unique:users,email',       // Required, valid email, unique, max 255 chars
@@ -22,7 +23,7 @@ class UserController extends Controller
             ]);
 
 
-
+            // Assign validated data to variables
             $username = $validated['username'];
             $password = bcrypt($validated['password']);
             $name = $validated['name'];
@@ -31,7 +32,7 @@ class UserController extends Controller
             $gender = $validated['gender'] ?? null;
             $role = $validated['role'] ?? 'subscriber';
 
-
+            // Create a new user in database
             $user = User::create([
                 'username' => $username,
                 'password' => $password,
@@ -41,13 +42,14 @@ class UserController extends Controller
                 'gender' => $gender,
                 'role' => $role
             ]);
-
+            
+            // Return a success response
             return response()->json([
                 "status" => 200,
                 "message" => "Registered Successfull!"
             ]);
         } catch (\Exception $e) {
-            // Handle exceptions
+            // return errors
             return response()->json([
                 'error' => 'Server error',
                 'message' => $e->getMessage(),
@@ -55,8 +57,10 @@ class UserController extends Controller
         }
     }
 
+    // user login
     public function login(Request $request){
         try{
+            // Validate data
             $validated = $request->validate([
                 'username' => 'required|string|max:255',
                 'password' => 'required|string|min:8',
@@ -64,7 +68,7 @@ class UserController extends Controller
 
             $username = $validated['username'];
             $password = $validated['password'];
-
+            // find users by username
             $user = User::where('username', $username)->first();
             if (!$user) {
                 return response()->json([
@@ -72,23 +76,25 @@ class UserController extends Controller
                     "message" => "Invalid username or password"
                 ]);
             }
-
+            // verify password
             if (!Hash::check($password, $user->password)) {
                 return response()->json([
                     "status" => 401,
                     "message" => "Invalid username or password"
                 ]);
             }
+            // generate authentication tokan to user
             $token = $user->createToken('auth_token')->plainTextToken;
-
+            // return success authentication token
             return response()->json([
                 "status" => 200,
                 "message" => "Login Successfull!",
                 'access_token' => $token,
                 'token_type' => 'Bearer',
             ]);
+            
         } catch (\Exception $e) {
-            // Handle exceptions
+            // Handle errors
             return response()->json([
                 'status' => 500,
                 'message' => 'Server error.',
