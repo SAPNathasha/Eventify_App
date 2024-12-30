@@ -15,6 +15,7 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
+        // Check user is authenticated and role matches the required role
         if ($request->user() && $request->user()->role === $role) {
             return $next($request);
         }
