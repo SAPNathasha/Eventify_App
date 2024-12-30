@@ -8,21 +8,24 @@ use App\Models\Event;
 
 class AdminController extends Controller
 {
+    // delete a user with their events
     public function deleteUser($id)
     {
         try {
-            // Check if the user exists
+            // find the user
             $user = User::findOrFail($id);
-
+            // delete all events created by the user
             Event::where('createdUserId', $id)
             ->delete();
-
+            // delete user from DB
             $user->delete();
-
+            // return success
             return response()->json([
                 "status" => 200,
                 "message" => "User has been deleted successfully!"
             ]);
+
+        // return errors
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'status' => 404,
@@ -37,10 +40,11 @@ class AdminController extends Controller
         }
     }
 
+    // add a new event
     public function addEvent(Request $request)
     {
         try {
-
+            // validate requested data
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string|max:1000',
@@ -51,7 +55,7 @@ class AdminController extends Controller
             ]);
 
 
-
+            // extract validated data
             $title = $validated['title'];
             $description = $validated['description']?? null;
             $startDateTime = $validated['startDateTime'];
@@ -59,7 +63,7 @@ class AdminController extends Controller
             $venue = $validated['venue'];
             $userId = $validated['userId'];
 
-
+            // create a new event in DB
             Event::create([
                 'title' => $title,
                 'description' => $description,
@@ -69,12 +73,14 @@ class AdminController extends Controller
                 'createdUserId' => $userId,
             ]);
 
+            // return success
             return response()->json([
                 "status" => 200,
                 "message" => "Event has created susccessfully!"
             ]);
+        
         } catch (\Exception $e) {
-            // Handle exceptions
+            // return errors
             return response()->json([
                 'error' => 'Server error',
                 'message' => $e->getMessage(),
@@ -82,17 +88,18 @@ class AdminController extends Controller
         }
     }
 
+    //fetch all users
     public function getAllUsers()
     {
         try {
-
+            // retrieve all users by id and name
             $users = User::select('id', 'name')->get();
-
+            // return success
             return response()->json([
                 'status' => 200,
                 'data' => $users,
             ]);
-
+        // return errors
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Server error',
