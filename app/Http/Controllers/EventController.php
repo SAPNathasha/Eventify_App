@@ -192,4 +192,31 @@ class EventController extends Controller
             ], 500);
         }
     }
+
+    public function getEventById($id)
+    {
+        try {
+            $userId = auth()->id();
+
+            $events = Event::where('createdUserId', $userId)
+            ->where('id', $id)
+            ->firstOrFail();
+            return response()->json([
+                'status' => 200,
+                'data' => $events,
+            ]);
+
+        // return errors
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'status' => 404,
+                'message' => "Event can't be found or you do not have permission to get it.",
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Server error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
