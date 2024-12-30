@@ -94,7 +94,7 @@ class UserController extends Controller
             ]);
             
         } catch (\Exception $e) {
-            // Handle errors
+            // return errors
             return response()->json([
                 'status' => 500,
                 'message' => 'Server error.',
