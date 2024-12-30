@@ -53,7 +53,7 @@ class EventController extends Controller
         }
     }
 
-    // edit an event
+    // edit the event
     public function editEvent(Request $request)
     {
         try {
@@ -70,10 +70,12 @@ class EventController extends Controller
             $userId = auth()->id();
             $eventId = $validated['eventId'];
 
+            // fetch the event
             $event = Event::where('id', $eventId)
             ->where('createdUserId', $userId)
             ->firstOrFail();
 
+            // build updates
             $updates = [];
             if (isset($validated['title'])) {
                 $updates['title'] = $validated['title'];
@@ -87,14 +89,15 @@ class EventController extends Controller
             if (isset($validated['endDateTime'])) {
                 $updates['end_time'] = $validated['endDateTime'];
             }
-
+            // update the event in DB
             $event->update($updates);
 
-
+            // return success
             return response()->json([
                 "status" => 200,
                 "message" => "Event has updated susccessfully!"
             ]);
+            // return errors
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'status' => 404,
@@ -102,7 +105,6 @@ class EventController extends Controller
             ], 404);
 
         } catch (\Exception $e) {
-            // Handle exceptions
             return response()->json([
                 'error' => 'Server error',
                 'message' => $e->getMessage(),
@@ -110,10 +112,12 @@ class EventController extends Controller
         }
     }
 
+
+    // delete the event
     public function deleteEvent(Request $request)
     {
         try {
-
+            // validate requested data
             $validated = $request->validate([
                 'eventId' => 'required|exists:events,id',
             ]);
@@ -121,17 +125,18 @@ class EventController extends Controller
             $userId = auth()->id();
             $eventId = $validated['eventId'];
 
+            // fetch the event 
             $event = Event::where('id', $eventId)
                 ->where('createdUserId', $userId)
                 ->firstOrFail();
-
+            // delete event in DB
             $event->delete();
-
+            // return success
             return response()->json([
                 "status" => 200,
                 "message" => "Event has been deleted successfully!",
             ]);
-
+        // return errors
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'status' => 404,
@@ -146,16 +151,19 @@ class EventController extends Controller
         }
     }
 
+
+    // fetch all the events
     public function getAllEvents()
     {
         try {
+        // Retrieve all events with creator's ID and name
         $events = Event::with('creator:id,name')->get();
-
+        // return success
         return response()->json([
             'status' => 200,
             'data' => $events,
         ]);
-
+        // return errors
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Server error',
