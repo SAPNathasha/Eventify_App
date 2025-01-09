@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use \Illuminate\Support\Facades\Hash;
 class UserController extends Controller
-    
+
 {   //Register a new user
     public function register(Request $request)
     {
@@ -38,7 +38,7 @@ class UserController extends Controller
                 'phone_number' => $phone_number,
                 'role' => "subscriber"
             ]);
-            
+
             // Return a success response
             return response()->json([
                 "status" => 200,
@@ -70,7 +70,7 @@ class UserController extends Controller
                 return response()->json([
                     "status" => 401,
                     "message" => "Invalid username or password"
-                ]);
+                ], 401);
             }
             // verify password
             if (!Hash::check($password, $user->password)) {
@@ -87,8 +87,8 @@ class UserController extends Controller
                 "message" => "Login Successfull!",
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-            ],401);
-            
+            ],200);
+
         } catch (\Exception $e) {
             // return errors
             return response()->json([
